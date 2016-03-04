@@ -1,0 +1,268 @@
+<!-- /templates/product.liquid -->
+
+<!-- conditional vtrainer gallery -->
+<!-- .conditional -->
+
+<!-- Bold D&H //product -->
+{% if product.metafields.inventory.ShappifyHidden == "true" %}
+Product is not available
+{% break %}{% endif %}
+<!-- // end product D&H -->
+
+<div itemscope itemtype="http://schema.org/Product">
+
+  <meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
+  <meta itemprop="image" content="{{ product.featured_image.src | img_url: 'grande' }}">
+
+  {% assign current_variant = product.selected_or_first_available_variant %}
+
+  <div class="grid--full product-single glass">
+
+
+    <div class="grid__item one-whole text-center">
+      <h1 class="product-single__title" itemprop="name">{{ product.title | upcase }}</h1>
+    </div>
+
+    <div class="grid__item large--seven-twelfths medium--seven-twelfths text-center right-gutter">
+      <div class="product-single__photos">
+        {% assign featured_image = current_variant.featured_image | default: product.featured_image %}
+
+        {% comment %}
+          Display current variant image, or default first
+        {% endcomment %}
+        <div class="product-single__photo-wrapper">
+          <img class="product-single__photo" id="ProductPhotoImg" src="{{ featured_image | img_url: 'grande' }}" {% if settings.product_zoom_enable %}data-mfp-src="{{ featured_image | img_url: '1024x1024' }}"{% endif %} alt="{{ featured_image.alt | escape }}" data-image-id="{{ featured_image.id }}">
+        </div>
+
+        {% comment %}
+          Display rest of product images, not repeating the featured one
+        {% endcomment %}
+        {% for image in product.images %}
+          {% unless image contains featured_image %}
+            <div class="product-single__photo-wrapper">
+              <img class="product-single__photo" src="{{ image.src | img_url: 'grande' }}" {% if settings.product_zoom_enable %}data-mfp-src="{{ image.src | img_url: '1024x1024' }}"{% endif %} alt="{{ image.alt | escape }}" data-image-id="{{ image.id }}">
+            </div>
+          {% endunless %}
+        {% endfor %}
+      </div>
+    {% comment %}
+    Add ibook image based on platform
+    {% endcomment %}
+    <div id="ibook"></div>
+{% comment %}
+  Displays carousel if Vtrainer is selected
+      {% endcomment %}
+      {% if product.metafields.helper.images != nil %}
+      <div id="vwrapper" class="hidden">
+      <div id="vtrainers" class="owl-carousel">
+      {% assign gallery = product.metafields.helper.images | split: ',' %}
+        {% for image in gallery %}
+          <div>
+            <a href="{{ image }}" class="fancypic"><img src="{{ image }}" alt="" style=""></a>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+        {% else %}
+      <div id="vtrainers">
+        <a class="fancypic" href="{{ image }}" class=""><img class=" " src="{{ 'lida-md-logo-no-glow.png' | asset_url }}" alt="" style="display:none"></a>
+      </div>
+        {% endif %}
+
+    </div>
+
+
+    <div class="grid__item product-single__meta--wrapper medium--five-twelfths large--five-twelfths">
+      <div class="product-single__meta">
+        {% if settings.product_vendor_enable %}
+          <h2 class="product-single__vendor" itemprop="brand">{{ product.vendor }}</h2>
+        {% endif %}
+
+        <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+          {% comment %}
+            Optionally show the 'compare at' or original price of the product.
+          {% endcomment %}
+
+          {% if product.compare_at_price > product.price %}
+            <span class="product-single__price--wrapper">
+              <span class="visually-hidden">{{ 'products.general.regular_price' | t }}</span>
+              <span id="ComparePrice" class="product-single__price--compare-at">
+                {{ product.compare_at_price | money }}
+              </span>
+              <span class="visually-hidden">{{ 'products.general.sale_price' | t }}</span>
+            </span>
+          {% endif %}
+
+          <div class="product-single__description" itemprop="description">
+            {{ product.description }}
+          </div>
+
+          <span id="ProductPrice" class="product-single__price{% if product.compare_at_price > product.price %} on-sale{% endif %}" itemprop="price">
+            {{ current_variant.price | money }}
+          </span>
+
+          <hr class="hr--medium">
+
+          <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+          <link itemprop="availability" href="http://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}">
+
+          <form action="/cart/add" method="post" enctype="multipart/form-data" class="product-single__form shappify_add_to_cart_form" id="AddToCartForm" data-product-id="{{ product.id }}" enctype="multipart/form-data">
+            <!-- Bold: Options 3-2 -->
+            {% include 'shappify-options' %}
+            <!-- // end Options 3-2 -->
+            <div id="tipbox">
+              <p id="tip-copy"></p>
+            </div>
+            <select name="id" id="ProductSelect" class="product-single__variants">
+              {% for variant in product.variants %}
+                {% if variant.available %}
+                  <option {% if variant == product.selected_or_first_available_variant %} selected="selected" {% endif %} data-sku="{{ variant.sku }}" value="{{ variant.id }}">{{ variant.title }} - {{ variant.price | money_with_currency }}</option>
+                {% else %}
+                  <option disabled="disabled">
+                    {{ variant.title }} - {{ 'products.product.sold_out' | t }}
+                  </option>
+                {% endif %}
+              {% endfor %}
+            </select>
+
+            {% comment %}
+            <div class="product-single__quantity">
+              <label for="Quantity" class="product-single__quantity-label js-quantity-selector">{{ 'products.product.quantity' | t }}</label>
+              <input type="number" hidden="hidden" id="Quantity" name="quantity" value="1" min="1" class="js-quantity-selector">
+            </div>
+            {% endcomment %}
+
+            <div class="product-single__add-to-cart">
+              <button type="submit" name="add" id="AddToCart" class="btn">
+                <span id="AddToCartText">{{ 'products.product.add_to_cart' | t }}</span>
+              </button>
+            </div>
+          </form>
+
+        </div>
+
+      </div>
+    </div>
+    {% if settings.social_sharing_products %}
+<div class="grid__item one-whole">
+  <hr class="hr--small" style="margin: 15px auto">
+      {% include 'social-sharing' %}
+</div>
+    {% endif %}
+  </div>
+
+  {% if collection %}
+    <hr class="hr--clear">
+    <div class="text-center">
+      <a href="{{ collection.url }}" class="return-link">&larr; {{ 'products.general.collection_return' | t: collection: collection.title }}</a>
+    </div>
+  {% endif %}
+
+</div>
+
+{% comment %}
+
+  *IMPORTANT:*
+  This theme uses a customized version of `option_selection.js` to support using radio inputs for
+  color and size variants. The custom version is in `variant_selection.js`.
+
+  If you wish to enable the default dropdowns for size and color
+  you can change the liquid asset tag below from:
+
+  {{ 'variant_selection.js' | asset_url | script_tag }}
+
+  to
+
+  {{ 'option_selection.js' | shopify_asset_url | script_tag }}
+
+  If you use the default `option_selection.js` the labels for the dropdowns will
+  appear outside the dropdown.
+
+  You will also need to change `.radio-wrapper` to `.selector-wrapper` below.
+
+{% endcomment %}
+{{ 'variant_selection.js' | asset_url | script_tag }}
+<script>
+  var selectCallback = function(variant, selector) {
+    timber.productPage({
+      money_format: "{{ shop.money_format }}",
+      variant: variant,
+      selector: selector
+    });
+  };
+
+  jQuery(function($) {
+    new Shopify.OptionSelectors('ProductSelect', {
+      product: {{ product | json }},
+      onVariantSelected: selectCallback,
+      enableHistoryState: true
+    });
+
+    // Add label if only one product option and it isn't 'Title'. Could be 'Size'.
+    {% if product.options.size == 1 and product.options.first != 'Title' %}
+      $('.radio-wrapper:eq(0)').prepend('<label for="ProductSelect-option-0" class="single-option-radio__label">{{ product.options.first | escape }}</label>');
+    {% endif %}
+
+    // Hide drop-down selectors if we only have 1 variant and its title contains 'Default'.
+    {% if product.variants.size == 1 and product.variants.first.title contains 'Default' %}
+      $('.selector-wrapper').hide();
+    {% endif %}
+  });
+
+  /*==== Enable Vtrainer pics ====*/
+  $(window).load(function(){
+
+    //iBook Template
+    $('select#189596').change(function(){
+      console.log($('#189596')[0].selectedIndex);
+      switch($('#189596')[0].selectedIndex) {
+        case 1:
+        ibook = '<img src="{{ 'ibook.png' | asset_url }}" class="fancypic" alt="" style="width:80%;max-width:384px">';
+        break;
+        case 2:
+        ibook = '<img src="{{ 'ibook.png' | asset_url }}" class="fancypic" alt="" style="width:80%;max-width:384px">';
+        break;
+        case 3:
+        ibook = '<img src="{{ 'ibook.png' | asset_url }}" class="fancypic" alt="" style="width:80%;max-width:384px">';
+        break;
+        case 4:
+        ibook = '<img src="{{ 'blank.png' | asset_url }}" class="fancypic" alt="" style="width:1px;">';
+        break;
+        default:
+        ibook = '<img src="{{ 'blank.png' | asset_url }}" class="fancypic" alt="" style="width:1px">';
+      }
+      $('#ibook').html(ibook);
+    });
+
+    //Vtrainer Template
+    $('select#190423').change(function(){
+      //console.log($(this)[0].selectedIndex);
+      if($('#190423')[0].selectedIndex === 1){
+      $('#vwrapper').css('display','block');
+    } else {
+      $('#vwrapper').css('display','none');
+    }
+
+    });
+
+
+});
+</script>
+
+<script>
+$(document).ready(function(){
+  $("#vtrainers").owlCarousel({
+    singleItem : true,
+    //Basic Speeds
+    slideSpeed : 200,
+    paginationSpeed : 800,
+    rewindSpeed : 1000,
+
+    //Autoplay
+    autoPlay : true,
+    stopOnHover : false
+  });
+});
+
+
+</script>

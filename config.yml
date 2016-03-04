@@ -1,0 +1,11 @@
+yaml
+---
+:api_key: 13b503ed7b971d767000c30722b66161
+:password: 993174b643617fcd79c9896205acb2b2
+:store: lidamd-com.myshopify.com
+:theme_id:
+:whitelist_files:
+- directoryToUpload/
+- importantFile.txt
+:ignore_files:
+- config/settings.html

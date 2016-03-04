@@ -1,0 +1,22 @@
+<!-- /templates/page.liquid -->
+    <div class="grid--full glass">
+      <div class="grid__item one-whole">
+        <header class="section-header text-center">
+          <h1>{{ page.title | upcase }}</h1>
+          <hr class="hr--medium">
+        </header>
+      </div>
+      <div class="grid__item one-whole hero-col">
+        <a href="{{ 'product-delivery-infograph_large.png' | asset_url }}" class="fancypic" id="zoom">
+          <img src="{{ 'product-delivery-infograph_large.png' | asset_url }}" class="responsive" alt="Our Delivery Methods">
+        </a>
+        <br>
+        <div class="fancytwo"></div>
+      </div>
+
+      <div class="grid__item one-whole">
+        <div class="rte rte--nomargin rte--indented-images">
+          {{ page.content }}
+        </div>
+      </div>
+    </div>

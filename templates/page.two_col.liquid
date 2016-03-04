@@ -1,0 +1,23 @@
+<!-- /templates/page.liquid -->
+    <div class="grid--full glass">
+      <div class="grid__item one-whole">
+        <header class="section-header text-center">
+          <h1>{{ page.title | upcase }}</h1>
+          <hr class="hr--medium">
+        </header>
+      </div>
+      <div class="grid__item large--one-half small--one-whole right-gutter">
+          {% if page.metafields.helpers.images != nil %}
+          {% for image in page.metafields.helpers.images %}
+            <img class="{% if page.metafields.helpers.border == 'true' %}portrait{% endif %}" src="{{ image }}" alt="">
+          {% endfor %}
+          {% else %}
+          <img class=" " src="{{ 'lida-md-logo-no-glow.png' | asset_url }}" alt="">
+          {% endif %}
+      </div>
+      <div class="grid__item large--one-half small--one-whole">
+        <div class="rte rte--nomargin rte--indented-images">
+          {{ page.content }}
+        </div>
+      </div>
+    </div>

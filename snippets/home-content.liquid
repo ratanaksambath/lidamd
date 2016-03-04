@@ -1,0 +1,18 @@
+{% if settings.home_page_content != blank %}
+
+  {% assign home_page_content_enabled = true %}
+
+  {% if section_number > 1 and number_of_index_sections > 1 %}
+   <hr class="hr--medium hr--clear">
+  {% endif %}
+
+  <div class="grid">
+    <div class="grid__item large--five-twelfths medium--hidden">
+    </div>
+    <div class="grid__item large--seven-twelfths medium--one-whole">
+      <div class="rte text-left glass">
+        {{ pages[settings.home_page_content].content }}
+      </div>
+    </div>
+  </div>
+{% endif %}

@@ -9,3 +9,4 @@ yaml
 - importantFile.txt
 :ignore_files:
 - config/settings.html
+- README.md
